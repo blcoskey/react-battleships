@@ -23,18 +23,51 @@ const Game = props => {
 
 	const [game, setGame] = useReducer(reducer, { stage: GameStages.SETUP });
 	const [ships, setShips] = useState([]);
+
 	const [selectedShip, setSelectedShip] = useState(defaultSelectedShip);
 
+	const reset = () => {
+		setSelectedShip(defaultSelectedShip);
+		setShips([]);
+	};
+
+	const getNextShip = (ships, selectedShip) => {
+		const nextShip = Object.values(ShipTypes).find(x => !ships.find(({ type }) => type === x) && !selectedShip.find(({ type }) => type === x));
+		if (!nextShip) {
+			return;
+		}
+		const nextShipSize = ShipSizes[nextShip];
+		const x = 5;
+		let y = 3;
+		let ship = [{ type: nextShip, x, y }];
+
+		for (let i = 0; i < nextShipSize; i++) {
+			ship.push({ type: nextShip, x, y: y++ });
+		}
+
+		return ship;
+	};
+
 	const moveShip = (moveX, moveY) => {
+		if (!selectedShip) {
+			return;
+		}
 		let oldSelectedShip = [...selectedShip];
 		let newSelectedShip = oldSelectedShip.reduce((acc, cur) => {
 			const { type, x, y } = cur;
 			return [...acc, { type, x: x + moveX, y: y + moveY }];
 		}, []);
+
+		if (newSelectedShip.find(({ x, y }) => x > 10 || x < 1 || y > 10 || y < 1)) {
+			return;
+		}
 		setSelectedShip(newSelectedShip);
 	};
 
 	const rotateShip = () => {
+		if (!selectedShip) {
+			return;
+		}
 		let oldSelectedShip = [...selectedShip];
 
 		let newSelectedShip = oldSelectedShip.reduce((acc, cur) => {
@@ -44,30 +77,20 @@ const Game = props => {
 		setSelectedShip(newSelectedShip);
 	};
 
-	const reset = () => {
-		setSelectedShip(defaultSelectedShip);
-		setShips([]);
-	};
-
 	const placeShip = () => {
+		if (!selectedShip) {
+			return;
+		}
 		let newShips = [...ships];
 		setShips([...newShips, ...selectedShip]);
 
-		const nextShip = getNextShip();
-		setSelectedShip(nextShip);
-	};
+		const nextShip = getNextShip(ships, selectedShip);
 
-	const getNextShip = () => {
-		const nextShip = Object.values(ShipTypes).find(x => !ships.find(({ type }) => type === x) && !selectedShip.find(({ type }) => type === x));
-		const nextShipSize = ShipSizes[nextShip];
-		let ship = [];
-		const x = 5;
-		let y = 3;
-		for (let i = 1; i < nextShipSize; i++) {
-			ship.push({ type: nextShip, x, y: y++ });
+		if (nextShip) {
+			setSelectedShip(nextShip);
+		} else {
+			setSelectedShip();
 		}
-
-		return ship;
 	};
 
 	const { stage } = game;
@@ -82,10 +105,10 @@ const Game = props => {
 				<div style={{ width: '135px', height: '135px' }}>
 					<div className='Button-Container'>
 						<div style={buttonStyle} onClick={placeShip}>
-							<Cell>Place</Cell>
+							<Cell disabled={!selectedShip}>Place</Cell>
 						</div>
 						<div style={buttonStyle} onClick={() => moveShip(-1, 0)}>
-							<Cell>
+							<Cell disabled={!selectedShip}>
 								<UpArrow />
 							</Cell>
 						</div>
@@ -93,27 +116,29 @@ const Game = props => {
 							<Cell>Reset</Cell>
 						</div>
 						<div style={buttonStyle} onClick={() => moveShip(0, -1)}>
-							<Cell>
+							<Cell disabled={!selectedShip}>
 								<LeftArrow />
 							</Cell>
 						</div>
 						<div style={buttonStyle} onClick={rotateShip}>
-							<Cell>
+							<Cell disabled={!selectedShip}>
 								<RotateArrow />
 							</Cell>
 						</div>
 						<div style={buttonStyle} onClick={() => moveShip(0, 1)}>
-							<Cell>
+							<Cell disabled={!selectedShip}>
 								<RightArrow />
 							</Cell>
 						</div>
 						<div style={buttonStyle}></div>
 						<div style={buttonStyle} onClick={() => moveShip(1, 0)}>
-							<Cell>
+							<Cell disabled={!selectedShip}>
 								<DownArrow />
 							</Cell>
 						</div>
-						<div style={buttonStyle}></div>
+						<div style={buttonStyle}>
+							<Cell disabled={!!selectedShip}>Start</Cell>
+						</div>
 					</div>
 				</div>
 			</div>

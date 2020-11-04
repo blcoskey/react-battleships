@@ -10,7 +10,7 @@ const boardStyle = {
 };
 
 const squareStyle = { width: '9%', height: '9%' };
-const BattleGrid = ({ ships, selectedShip, stage }) => {
+const BattleGrid = ({ ships, selectedShip = [], stage }) => {
 	const getShip = (cellX, cellY, shipArray) => {
 		return shipArray.find(({ x, y }) => x === cellX && cellY === y);
 	};
