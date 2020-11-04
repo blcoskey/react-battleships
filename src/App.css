@@ -39,6 +39,14 @@ body,
 	justify-content: start;
 }
 
+.Container2 {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-evenly;
+}
+
 .Item {
 	padding: 5px;
 	width: 200px;

@@ -1,8 +1,7 @@
 export const GameStages = {
 	SETUP: 0,
-	PLAYERTURN: 1,
-	BOTTURN: 2,
-	GAMEOVER: 3,
+	STARTGAME: 1,
+	GAMEOVER: 2,
 };
 
 export const ShipTypes = {

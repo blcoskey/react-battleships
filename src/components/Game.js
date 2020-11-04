@@ -21,7 +21,7 @@ const Game = props => {
 		{ type: ShipTypes.CARRIER, x: 5, y: 7 },
 	];
 
-	const [game, setGame] = useReducer(reducer, { stage: GameStages.SETUP });
+	const [game, setGame] = useState({ stage: GameStages.SETUP });
 	const [ships, setShips] = useState([]);
 
 	const [selectedShip, setSelectedShip] = useState(defaultSelectedShip);
@@ -93,6 +93,12 @@ const Game = props => {
 		}
 	};
 
+	const startGame = () => {
+		if (!selectedShip) {
+			setGame({ stage: GameStages.STARTGAME });
+		}
+	};
+
 	const { stage } = game;
 
 	const buttonStyle = { width: '33%', height: '33%' };
@@ -136,12 +142,30 @@ const Game = props => {
 								<DownArrow />
 							</Cell>
 						</div>
-						<div style={buttonStyle}>
+						<div style={buttonStyle} onClick={startGame}>
 							<Cell disabled={!!selectedShip}>Start</Cell>
 						</div>
 					</div>
 				</div>
 			</div>
+		);
+	}
+
+	if (stage === GameStages.STARTGAME) {
+		return (
+			<>
+				<div className='Container2'>
+					<div style={{ width: '500px', height: '500px' }}>
+						<h3>Player</h3>
+						<BattleGrid ships={ships} selectedShip={selectedShip} stage={stage} />
+					</div>
+					<div style={{ width: '500px', height: '500px' }}>
+						<h3>Bot</h3>
+						<BattleGrid ships={ships} selectedShip={selectedShip} stage={stage} />
+					</div>
+				</div>
+				<div className='Container2'></div>
+			</>
 		);
 	}
 
