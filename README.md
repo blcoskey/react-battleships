@@ -1,6 +1,6 @@
 # React Battleships
 
-I Recreated the classic game of battleships using react. 
+I recreated the classic game of battleships using react. 
 
 ## Setup
 1. Clone repo
