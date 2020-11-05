@@ -29,3 +29,8 @@ export const BotState = {
 	SCOUT: 0,
 	HUNT: 1,
 };
+
+export const ZoneType = {
+	SHIP: 0,
+	ADJACENT: 1,
+};

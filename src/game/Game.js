@@ -22,3 +22,7 @@ export const getShip = (cellX, cellY, ships) => {
 export const getShot = (cellX, cellY, shots) => {
 	return shots.find(({ x, y }) => x === cellX && cellY === y);
 };
+
+export const sortShips = (a, b) => {
+	return a.x > b.x ? 1 : a.x === b.x ? (a.y > b.y ? 1 : -1) : -1;
+};
