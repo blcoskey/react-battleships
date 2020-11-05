@@ -54,6 +54,9 @@ const Game = props => {
 		setSelectedShip(defaultSelectedShip);
 		setPlayerShips([]);
 		setGame(GameStages.SETUP);
+		setTurn(PlayerType.PLAYER);
+		setBotShots([]);
+		setPlayerShots([]);
 	};
 
 	const getNextShip = (ships, selectedShip) => {
@@ -173,6 +176,18 @@ const Game = props => {
 		}
 	};
 
+	const playerWin = () => {
+		return sunkAllShips(playerShots);
+	};
+
+	useEffect(() => {
+		if (game === GameStages.STARTGAME) {
+			if (playerWin()) {
+				setGame(GameStages.GAMEOVER);
+			}
+		}
+	}, [playerShots]);
+
 	useEffect(() => {
 		if (game === GameStages.STARTGAME) {
 			const { hit: lastShotHit } = botShots[botShots.length - 1] || [];
@@ -244,7 +259,7 @@ const Game = props => {
 		);
 	}
 
-	if (game === GameStages.STARTGAME || game === GameStages.GAMEOVER) {
+	if (game === GameStages.STARTGAME) {
 		return (
 			<>
 				<div className='Container2'>
@@ -261,7 +276,28 @@ const Game = props => {
 		);
 	}
 
-	return <div>Yo!</div>;
+	return (
+		<>
+			<div className='Container3'>
+				<div>
+					<h1>{playerWin() ? 'You Win!' : 'Game Over'}</h1>
+					<div style={{ width: '100%', height: '50%' }} onClick={reset}>
+						<Cell pointer>Try Again</Cell>
+					</div>
+				</div>
+			</div>
+			<div className='Container2'>
+				<div style={{ width: '500px', height: '500px' }}>
+					<h3>Player</h3>
+					<BattleGrid shots={botShots} ships={playerShips} selectedShip={selectedShip} stage={game} playerType={PlayerType.PLAYER} />
+				</div>
+				<div style={{ width: '500px', height: '500px' }}>
+					<h3>Bot</h3>
+					<BattleGrid shots={playerShots} ships={botShips} selectedShip={[]} stage={game} playerType={PlayerType.BOT} fireShot={fireShot} />
+				</div>
+			</div>
+		</>
+	);
 };
 
 export default Game;

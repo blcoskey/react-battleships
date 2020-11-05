@@ -47,6 +47,13 @@ body,
 	justify-content: space-evenly;
 }
 
+.Container3 {
+	width: 100%;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-evenly;
+}
+
 .Item {
 	padding: 5px;
 	width: 200px;
