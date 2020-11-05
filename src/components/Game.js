@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ShipTypes, ShipSizes, GameStages, PlayerType } from '../game/transforms';
 import BattleGrid from './BattleGrid';
 import Cell from './Cell';
@@ -8,8 +8,9 @@ import { ReactComponent as DownArrow } from '../icons/arrow-down.svg';
 import { ReactComponent as LeftArrow } from '../icons/arrow-left.svg';
 import { ReactComponent as RightArrow } from '../icons/arrow-right.svg';
 import { ReactComponent as RotateArrow } from '../icons/arrow-rotate.svg';
+import { ReactComponent as ShuffleIcon } from '../icons/shuffle.svg';
 import { getShip, hasAdjacentShip } from '../game/Game';
-import { getNextShot } from '../game/BotBrain';
+import { getNextShot, getRandomFleetPlacement } from '../game/BotBrain';
 
 const Game = props => {
 	const defaultSelectedShip = [
@@ -24,35 +25,14 @@ const Game = props => {
 	const [turn, setTurn] = useState(PlayerType.PLAYER);
 	const [playerShips, setPlayerShips] = useState([]);
 	const [playerShots, setPlayerShots] = useState([]);
-	const [botShips, setBotShips] = useState([
-		{
-			type: 0,
-			x: 5,
-			y: 3,
-		},
-		{ type: 0, x: 5, y: 4 },
-		{ type: 0, x: 5, y: 5 },
-		{ type: 0, x: 5, y: 6 },
-		{ type: 0, x: 5, y: 7 },
-		{ type: 1, x: 1, y: 9 },
-		{ type: 1, x: 2, y: 9 },
-		{ type: 1, x: 3, y: 9 },
-		{ type: 1, x: 4, y: 9 },
-		{ type: 2, x: 7, y: 3 },
-		{ type: 2, x: 7, y: 4 },
-		{ type: 2, x: 7, y: 5 },
-		{ type: 3, x: 7, y: 9 },
-		{ type: 3, x: 8, y: 9 },
-		{ type: 3, x: 9, y: 9 },
-		{ type: 4, x: 3, y: 3 },
-		{ type: 4, x: 3, y: 4 },
-	]);
+	const [botShips, setBotShips] = useState([]);
 	const [botShots, setBotShots] = useState([]);
 	const [selectedShip, setSelectedShip] = useState(defaultSelectedShip);
 
 	const reset = () => {
 		setSelectedShip(defaultSelectedShip);
 		setPlayerShips([]);
+		setBotShips(getRandomFleetPlacement());
 		setGame(GameStages.SETUP);
 		setTurn(PlayerType.PLAYER);
 		setBotShots([]);
@@ -129,6 +109,7 @@ const Game = props => {
 
 	const startGame = () => {
 		if (!selectedShip) {
+			setBotShips(getRandomFleetPlacement());
 			setGame(GameStages.STARTGAME);
 		}
 	};
@@ -180,6 +161,11 @@ const Game = props => {
 		return sunkAllShips(playerShots);
 	};
 
+	const randomiseFleet = () => {
+		setSelectedShip();
+		setPlayerShips(getRandomFleetPlacement());
+	};
+
 	useEffect(() => {
 		if (game === GameStages.STARTGAME) {
 			if (playerWin()) {
@@ -208,9 +194,9 @@ const Game = props => {
 	const buttonStyle = { width: '33%', height: '33%' };
 	if (game === GameStages.SETUP) {
 		return (
-			<div className='Container'>
+			<div className='Container' key='STARTUPCONTAINER'>
 				<div style={{ width: '500px', height: '500px' }}>
-					<BattleGrid ships={playerShips} selectedShip={selectedShip} stage={game} />
+					<BattleGrid ships={playerShips} selectedShip={selectedShip} stage={game} key='STARTUPGRID' />
 				</div>
 				<div style={{ width: '135px', height: '135px' }}>
 					<div className='Button-Container'>
@@ -242,7 +228,11 @@ const Game = props => {
 								<RightArrow />
 							</Cell>
 						</div>
-						<div style={buttonStyle}></div>
+						<div style={buttonStyle} onClick={randomiseFleet}>
+							<Cell pointer>
+								<ShuffleIcon />
+							</Cell>
+						</div>
 						<div style={buttonStyle} onClick={() => moveShip(1, 0)}>
 							<Cell pointer disabled={!selectedShip}>
 								<DownArrow />
@@ -262,7 +252,7 @@ const Game = props => {
 	if (game === GameStages.STARTGAME) {
 		return (
 			<>
-				<div className='Container2'>
+				<div className='Container2' key='PLAYCONTAINER'>
 					<div style={{ width: '500px', height: '500px' }}>
 						<h3>Player</h3>
 						<BattleGrid shots={botShots} ships={playerShips} selectedShip={selectedShip} stage={game} playerType={PlayerType.PLAYER} />
@@ -278,10 +268,10 @@ const Game = props => {
 
 	return (
 		<>
-			<div className='Container3'>
+			<div className='Container3' key='ENDGAMECONTAINER'>
 				<div>
 					<h1>{playerWin() ? 'You Win!' : 'Game Over'}</h1>
-					<div style={{ width: '100%', height: '50%' }} onClick={reset}>
+					<div style={{ width: '100%' }} onClick={reset}>
 						<Cell pointer>Try Again</Cell>
 					</div>
 				</div>

@@ -39,4 +39,4 @@ export const Cell = ({ hasShip, shipAdjacent, pointer, placingShip, hit, miss, c
 	);
 };
 
-export default Cell;
+export default React.memo(Cell);
