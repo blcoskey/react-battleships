@@ -8,7 +8,7 @@ function App() {
 				<h2>react battleships</h2>
 			</div>
 			<div className='Game'>
-				<Game />
+				<Game key='Game-Component' />
 			</div>
 		</div>
 	);

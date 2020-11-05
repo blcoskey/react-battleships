@@ -1,29 +1,25 @@
 import React from 'react';
+import { PlayerType } from '../game/transforms';
 
 const squareStyle = {
 	width: '100%',
 	height: '100%',
 };
 
-export const Cell = ({ label, hasShip, shipAdjacent, placingShip, hit, miss, button = false, children, disabled }) => {
+export const Cell = ({ hasShip, shipAdjacent, pointer, placingShip, hit, miss, children, disabled, playerType }) => {
 	let backgroundColor = '#ffffff';
-	let pointer = button;
 
-	if (!label) {
-		if (!hasShip && !hit && !miss) {
-			backgroundColor = '#ffffff';
-			pointer = true;
-		}
-		if (miss) backgroundColor = '#fff6b5';
-		if (hit) backgroundColor = '#ffb5b5';
-		if (hasShip) backgroundColor = '#333';
-		if (placingShip) backgroundColor = '#39393a';
-		if (disabled || (shipAdjacent && placingShip)) {
-			backgroundColor = '#e8e8e8';
-			pointer = false;
-		}
-		if (placingShip && hasShip) backgroundColor = '#ffb5b5';
+	if (!hasShip && !hit && !miss) {
+		backgroundColor = '#ffffff';
 	}
+	if (hasShip && playerType !== PlayerType.BOT) backgroundColor = '#333';
+	if (miss) backgroundColor = '#fff6b5';
+	if (hit) backgroundColor = '#ffb5b5';
+	if (placingShip) backgroundColor = '#39393a';
+	if (disabled || (shipAdjacent && placingShip)) {
+		backgroundColor = '#e8e8e8';
+	}
+	if (placingShip && hasShip) backgroundColor = '#ffb5b5';
 
 	return (
 		<div
@@ -38,7 +34,7 @@ export const Cell = ({ label, hasShip, shipAdjacent, placingShip, hit, miss, but
 				justifyContent: 'center',
 			}}
 		>
-			{label || children}
+			{children}
 		</div>
 	);
 };

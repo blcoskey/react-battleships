@@ -18,3 +18,7 @@ export const hasAdjacentShip = (x, y, ships) => {
 export const getShip = (cellX, cellY, ships) => {
 	return ships.find(({ x, y }) => x === cellX && cellY === y);
 };
+
+export const getShot = (cellX, cellY, shots) => {
+	return shots.find(({ x, y }) => x === cellX && cellY === y);
+};

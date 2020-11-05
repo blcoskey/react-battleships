@@ -1,6 +1,7 @@
 import React from 'react';
 import { Cell } from './Cell';
-import { getLabel, hasAdjacentShip, getShip } from '../game/Game';
+import { getLabel, hasAdjacentShip, getShip, getShot } from '../game/Game';
+import { ShipTypes, ShipSizes, GameStages, PlayerType } from '../game/transforms';
 
 const boardStyle = {
 	width: '100%',
@@ -9,18 +10,46 @@ const boardStyle = {
 	flexWrap: 'wrap',
 };
 
-const squareStyle = { width: '9%', height: '9%' };
-const BattleGrid = ({ ships, selectedShip = [], stage }) => {
+let squareStyle = { width: '9%', height: '9%' };
+const BattleGrid = ({ ships, shots = [], selectedShip = [], stage, playerType, fireShot }) => {
 	const renderCell = i => {
 		const x = Math.floor(i / 11);
 		const y = i % 11;
 		const hasShip = getShip(x, y, ships);
+		const shot = getShot(x, y, shots);
 		const placingShip = getShip(x, y, selectedShip);
 		const shipAdjacent = hasAdjacentShip(x, y, ships);
+		const label = getLabel(x, y);
+		let pointer = false;
 
+		const fire = () => {
+			if (hasShip) {
+				fireShot(x, y, PlayerType.PLAYER, true);
+			} else {
+				fireShot(x, y, PlayerType.PLAYER, false);
+			}
+		};
+
+		const onClick = !shot && !label && x !== 0 && y !== 0 && stage === GameStages.STARTGAME && playerType === PlayerType.BOT ? fire : null;
+		if (onClick !== null) {
+			pointer = true;
+		}
+
+		const { hit } = shot || {};
 		return (
-			<div key={i} style={squareStyle}>
-				<Cell label={getLabel(x, y)} hasShip={hasShip} placingShip={placingShip} shipAdjacent={shipAdjacent} stage={stage} />
+			<div key={i} style={squareStyle} onClick={onClick}>
+				<Cell
+					hit={hit === true}
+					miss={hit === false}
+					pointer={pointer}
+					hasShip={hasShip}
+					playerType={playerType}
+					placingShip={placingShip}
+					shipAdjacent={shipAdjacent}
+					stage={stage}
+				>
+					{label}
+				</Cell>
 			</div>
 		);
 	};

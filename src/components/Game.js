@@ -1,5 +1,6 @@
-import React, { useReducer, useState } from 'react';
-import { ShipTypes, ShipSizes, GameStages } from '../game/transforms';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useReducer, useState } from 'react';
+import { ShipTypes, ShipSizes, GameStages, PlayerType } from '../game/transforms';
 import BattleGrid from './BattleGrid';
 import Cell from './Cell';
 import { ReactComponent as UpArrow } from '../icons/arrow-up.svg';
@@ -8,12 +9,9 @@ import { ReactComponent as LeftArrow } from '../icons/arrow-left.svg';
 import { ReactComponent as RightArrow } from '../icons/arrow-right.svg';
 import { ReactComponent as RotateArrow } from '../icons/arrow-rotate.svg';
 import { getShip, hasAdjacentShip } from '../game/Game';
+import { getNextShot } from '../game/BotBrain';
 
 const Game = props => {
-	const reducer = (prev, newState) => {
-		return { ...prev, ...newState };
-	};
-
 	const defaultSelectedShip = [
 		{ type: ShipTypes.CARRIER, x: 5, y: 3 },
 		{ type: ShipTypes.CARRIER, x: 5, y: 4 },
@@ -22,15 +20,40 @@ const Game = props => {
 		{ type: ShipTypes.CARRIER, x: 5, y: 7 },
 	];
 
-	const [game, setGame] = useState({ stage: GameStages.SETUP });
+	const [game, setGame] = useState(GameStages.SETUP);
+	const [turn, setTurn] = useState(PlayerType.PLAYER);
 	const [playerShips, setPlayerShips] = useState([]);
-
+	const [playerShots, setPlayerShots] = useState([]);
+	const [botShips, setBotShips] = useState([
+		{
+			type: 0,
+			x: 5,
+			y: 3,
+		},
+		{ type: 0, x: 5, y: 4 },
+		{ type: 0, x: 5, y: 5 },
+		{ type: 0, x: 5, y: 6 },
+		{ type: 0, x: 5, y: 7 },
+		{ type: 1, x: 1, y: 9 },
+		{ type: 1, x: 2, y: 9 },
+		{ type: 1, x: 3, y: 9 },
+		{ type: 1, x: 4, y: 9 },
+		{ type: 2, x: 7, y: 3 },
+		{ type: 2, x: 7, y: 4 },
+		{ type: 2, x: 7, y: 5 },
+		{ type: 3, x: 7, y: 9 },
+		{ type: 3, x: 8, y: 9 },
+		{ type: 3, x: 9, y: 9 },
+		{ type: 4, x: 3, y: 3 },
+		{ type: 4, x: 3, y: 4 },
+	]);
+	const [botShots, setBotShots] = useState([]);
 	const [selectedShip, setSelectedShip] = useState(defaultSelectedShip);
 
 	const reset = () => {
 		setSelectedShip(defaultSelectedShip);
 		setPlayerShips([]);
-		setGame({ stage: GameStages.SETUP });
+		setGame(GameStages.SETUP);
 	};
 
 	const getNextShip = (ships, selectedShip) => {
@@ -85,6 +108,7 @@ const Game = props => {
 		if (!selectedShip) {
 			return;
 		}
+		// Check for adjacent ships or existing ships
 		if (selectedShip.find(({ x, y }) => getShip(x, y, playerShips) || hasAdjacentShip(x, y, playerShips))) {
 			return;
 		}
@@ -102,55 +126,117 @@ const Game = props => {
 
 	const startGame = () => {
 		if (!selectedShip) {
-			setGame({ stage: GameStages.STARTGAME });
+			setGame(GameStages.STARTGAME);
 		}
 	};
 
-	const { stage } = game;
+	const fireShot = (x, y, playerType, hit = null) => {
+		// This pretty much only happens when the bot fires
+		if (hit === null) {
+			const ship = getShip(x, y, playerShips);
+			hit = !!ship;
+		}
+
+		let shots = [...playerShots];
+		if (playerType === PlayerType.BOT) {
+			shots = [...botShots];
+		}
+
+		shots = [...shots, { x, y, hit }];
+
+		if (playerType === PlayerType.BOT) {
+			setBotShots(shots);
+		} else {
+			setPlayerShots(shots);
+		}
+	};
+
+	useEffect(() => {
+		if (game === GameStages.STARTGAME) {
+			const { hit: lastShotHit } = playerShots[playerShots.length - 1] || [];
+			if (!lastShotHit) {
+				setTurn(PlayerType.BOT);
+			}
+		}
+	}, [playerShots]);
+
+	const sunkAllShips = shots => {
+		return shots.filter(({ hit }) => hit === true).length >= 17;
+	};
+
+	const botShot = () => {
+		if (sunkAllShips(botShots)) {
+			setGame(GameStages.GAMEOVER);
+		} else {
+			const { x, y } = getNextShot(botShots) || {};
+			fireShot(x, y, PlayerType.BOT);
+		}
+	};
+
+	useEffect(() => {
+		if (game === GameStages.STARTGAME) {
+			const { hit: lastShotHit } = botShots[botShots.length - 1] || [];
+			if (!lastShotHit) {
+				setTurn(PlayerType.PLAYER);
+			} else {
+				botShot();
+			}
+		}
+	}, [botShots]);
+
+	useEffect(() => {
+		if (turn === PlayerType.BOT && game === GameStages.STARTGAME) {
+			botShot();
+		}
+	}, [turn]);
 
 	const buttonStyle = { width: '33%', height: '33%' };
-	if (stage === GameStages.SETUP) {
+	if (game === GameStages.SETUP) {
 		return (
 			<div className='Container'>
 				<div style={{ width: '500px', height: '500px' }}>
-					<BattleGrid ships={playerShips} selectedShip={selectedShip} stage={stage} />
+					<BattleGrid ships={playerShips} selectedShip={selectedShip} stage={game} />
 				</div>
 				<div style={{ width: '135px', height: '135px' }}>
 					<div className='Button-Container'>
 						<div style={buttonStyle} onClick={placeShip}>
-							<Cell disabled={!selectedShip}>Place</Cell>
+							<Cell pointer disabled={!selectedShip}>
+								Place
+							</Cell>
 						</div>
 						<div style={buttonStyle} onClick={() => moveShip(-1, 0)}>
-							<Cell disabled={!selectedShip}>
+							<Cell pointer disabled={!selectedShip}>
 								<UpArrow />
 							</Cell>
 						</div>
 						<div style={buttonStyle} onClick={reset}>
-							<Cell>Reset</Cell>
+							<Cell pointer>Reset</Cell>
 						</div>
 						<div style={buttonStyle} onClick={() => moveShip(0, -1)}>
-							<Cell disabled={!selectedShip}>
+							<Cell pointer disabled={!selectedShip}>
 								<LeftArrow />
 							</Cell>
 						</div>
 						<div style={buttonStyle} onClick={rotateShip}>
-							<Cell disabled={!selectedShip}>
+							<Cell pointer disabled={!selectedShip}>
 								<RotateArrow />
 							</Cell>
 						</div>
 						<div style={buttonStyle} onClick={() => moveShip(0, 1)}>
-							<Cell disabled={!selectedShip}>
+							<Cell pointer disabled={!selectedShip}>
 								<RightArrow />
 							</Cell>
 						</div>
 						<div style={buttonStyle}></div>
 						<div style={buttonStyle} onClick={() => moveShip(1, 0)}>
-							<Cell disabled={!selectedShip}>
+							<Cell pointer disabled={!selectedShip}>
 								<DownArrow />
 							</Cell>
 						</div>
 						<div style={buttonStyle} onClick={startGame}>
-							<Cell disabled={!!selectedShip}>Start</Cell>
+							<Cell pointer disabled={!!selectedShip}>
+								Start
+							</Cell>
 						</div>
 					</div>
 				</div>
@@ -158,20 +244,19 @@ const Game = props => {
 		);
 	}
 
-	if (stage === GameStages.STARTGAME) {
+	if (game === GameStages.STARTGAME || game === GameStages.GAMEOVER) {
 		return (
 			<>
 				<div className='Container2'>
 					<div style={{ width: '500px', height: '500px' }}>
 						<h3>Player</h3>
-						<BattleGrid ships={playerShips} selectedShip={selectedShip} stage={stage} />
+						<BattleGrid shots={botShots} ships={playerShips} selectedShip={selectedShip} stage={game} playerType={PlayerType.PLAYER} />
 					</div>
 					<div style={{ width: '500px', height: '500px' }}>
 						<h3>Bot</h3>
-						<BattleGrid ships={[]} selectedShip={[]} stage={stage} />
+						<BattleGrid shots={playerShots} ships={botShips} selectedShip={[]} stage={game} playerType={PlayerType.BOT} fireShot={fireShot} />
 					</div>
 				</div>
-				<div className='Container2'></div>
 			</>
 		);
 	}
