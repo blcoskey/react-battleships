@@ -62,7 +62,7 @@ export const getShipPlacement = (shipSize, shipType, ships) => {
 	while (!cellIsValid) {
 		randomCell = getRandomBlock(usedCells);
 		if (!randomCell) {
-			const test = 5;
+			return null;
 		}
 		const { x, y } = randomCell;
 
@@ -91,17 +91,22 @@ export const getShipPlacement = (shipSize, shipType, ships) => {
 
 export const getRandomFleetPlacement = () => {
 	let ships = [];
+	let failure = false;
 
-	const carrier = getShipPlacement(ShipSizes[ShipTypes.CARRIER], ShipTypes.CARRIER, ships);
-	ships = carrier;
-	const battleship = getShipPlacement(ShipSizes[ShipTypes.BATTLESHIP], ShipTypes.BATTLESHIP, ships);
-	ships = [...ships, ...battleship];
-	const destroyer = getShipPlacement(ShipSizes[ShipTypes.DESTROYER], ShipTypes.DESTROYER, ships);
-	ships = [...ships, ...destroyer];
-	const submarine = getShipPlacement(ShipSizes[ShipTypes.SUBMARINE], ShipTypes.SUBMARINE, ships);
-	ships = [...ships, ...submarine];
-	const patrol = getShipPlacement(ShipSizes[ShipTypes.PATROLBOAT], ShipTypes.PATROLBOAT, ships);
-	ships = [...ships, ...patrol];
+	Object.keys(ShipSizes).forEach(x => {
+		const newShip = getShipPlacement(ShipSizes[x], ShipTypes[x], ships);
+
+		if (newShip === null) {
+			failure = true;
+		} else {
+			ships = [...ships, ...newShip];
+		}
+	});
+
+	// Recusrive hack for random instances of the random generator getting the placement wrong
+	if (failure) {
+		ships = getRandomFleetPlacement();
+	}
 
 	return ships;
 };
