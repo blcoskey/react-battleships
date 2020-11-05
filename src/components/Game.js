@@ -7,6 +7,7 @@ import { ReactComponent as DownArrow } from '../icons/arrow-down.svg';
 import { ReactComponent as LeftArrow } from '../icons/arrow-left.svg';
 import { ReactComponent as RightArrow } from '../icons/arrow-right.svg';
 import { ReactComponent as RotateArrow } from '../icons/arrow-rotate.svg';
+import { getShip, hasAdjacentShip } from '../game/Game';
 
 const Game = props => {
 	const reducer = (prev, newState) => {
@@ -22,13 +23,14 @@ const Game = props => {
 	];
 
 	const [game, setGame] = useState({ stage: GameStages.SETUP });
-	const [ships, setShips] = useState([]);
+	const [playerShips, setPlayerShips] = useState([]);
 
 	const [selectedShip, setSelectedShip] = useState(defaultSelectedShip);
 
 	const reset = () => {
 		setSelectedShip(defaultSelectedShip);
-		setShips([]);
+		setPlayerShips([]);
+		setGame({ stage: GameStages.SETUP });
 	};
 
 	const getNextShip = (ships, selectedShip) => {
@@ -41,8 +43,9 @@ const Game = props => {
 		let y = 3;
 		let ship = [{ type: nextShip, x, y }];
 
-		for (let i = 0; i < nextShipSize; i++) {
-			ship.push({ type: nextShip, x, y: y++ });
+		for (let i = 1; i < nextShipSize; i++) {
+			y++;
+			ship.push({ type: nextShip, x, y: y });
 		}
 
 		return ship;
@@ -78,13 +81,17 @@ const Game = props => {
 	};
 
 	const placeShip = () => {
+		// No ships left to place
 		if (!selectedShip) {
 			return;
 		}
-		let newShips = [...ships];
-		setShips([...newShips, ...selectedShip]);
+		if (selectedShip.find(({ x, y }) => getShip(x, y, playerShips) || hasAdjacentShip(x, y, playerShips))) {
+			return;
+		}
+		let newShips = [...playerShips];
+		setPlayerShips([...newShips, ...selectedShip]);
 
-		const nextShip = getNextShip(ships, selectedShip);
+		const nextShip = getNextShip(playerShips, selectedShip);
 
 		if (nextShip) {
 			setSelectedShip(nextShip);
@@ -106,7 +113,7 @@ const Game = props => {
 		return (
 			<div className='Container'>
 				<div style={{ width: '500px', height: '500px' }}>
-					<BattleGrid ships={ships} selectedShip={selectedShip} stage={stage} />
+					<BattleGrid ships={playerShips} selectedShip={selectedShip} stage={stage} />
 				</div>
 				<div style={{ width: '135px', height: '135px' }}>
 					<div className='Button-Container'>
@@ -157,11 +164,11 @@ const Game = props => {
 				<div className='Container2'>
 					<div style={{ width: '500px', height: '500px' }}>
 						<h3>Player</h3>
-						<BattleGrid ships={ships} selectedShip={selectedShip} stage={stage} />
+						<BattleGrid ships={playerShips} selectedShip={selectedShip} stage={stage} />
 					</div>
 					<div style={{ width: '500px', height: '500px' }}>
 						<h3>Bot</h3>
-						<BattleGrid ships={ships} selectedShip={selectedShip} stage={stage} />
+						<BattleGrid ships={[]} selectedShip={[]} stage={stage} />
 					</div>
 				</div>
 				<div className='Container2'></div>

@@ -5,7 +5,7 @@ const squareStyle = {
 	height: '100%',
 };
 
-export const Cell = ({ label, hasShip, placingShip, hit, miss, button = false, children, disabled }) => {
+export const Cell = ({ label, hasShip, shipAdjacent, placingShip, hit, miss, button = false, children, disabled }) => {
 	let backgroundColor = '#ffffff';
 	let pointer = button;
 
@@ -18,11 +18,11 @@ export const Cell = ({ label, hasShip, placingShip, hit, miss, button = false, c
 		if (hit) backgroundColor = '#ffb5b5';
 		if (hasShip) backgroundColor = '#333';
 		if (placingShip) backgroundColor = '#39393a';
-		if (placingShip && hasShip) backgroundColor = '#ffb5b5';
-		if (disabled) {
+		if (disabled || (shipAdjacent && placingShip)) {
 			backgroundColor = '#e8e8e8';
 			pointer = false;
 		}
+		if (placingShip && hasShip) backgroundColor = '#ffb5b5';
 	}
 
 	return (

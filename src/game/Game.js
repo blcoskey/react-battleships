@@ -6,7 +6,15 @@ export const getLabel = (x, y) => {
 	return cell;
 };
 
-export const canDropShip = (x, y) => {
-	return true;
+export const hasAdjacentShip = (x, y, ships) => {
+	return ships.find(
+		({ x: shipX, y: shipY }) =>
+			(Math.abs(shipX - x) === 1 && Math.abs(shipY - y) === 1) ||
+			(Math.abs(shipX - x) === 0 && Math.abs(shipY - y) === 1) ||
+			(Math.abs(shipX - x) === 1 && Math.abs(shipY - y) === 0)
+	);
 };
-export const dropShip = (x, y) => {};
+
+export const getShip = (cellX, cellY, ships) => {
+	return ships.find(({ x, y }) => x === cellX && cellY === y);
+};

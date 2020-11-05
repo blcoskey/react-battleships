@@ -1,6 +1,6 @@
 import React from 'react';
 import { Cell } from './Cell';
-import { getLabel } from '../game/Game';
+import { getLabel, hasAdjacentShip, getShip } from '../game/Game';
 
 const boardStyle = {
 	width: '100%',
@@ -11,19 +11,16 @@ const boardStyle = {
 
 const squareStyle = { width: '9%', height: '9%' };
 const BattleGrid = ({ ships, selectedShip = [], stage }) => {
-	const getShip = (cellX, cellY, shipArray) => {
-		return shipArray.find(({ x, y }) => x === cellX && cellY === y);
-	};
-
 	const renderCell = i => {
 		const x = Math.floor(i / 11);
 		const y = i % 11;
 		const hasShip = getShip(x, y, ships);
 		const placingShip = getShip(x, y, selectedShip);
+		const shipAdjacent = hasAdjacentShip(x, y, ships);
 
 		return (
 			<div key={i} style={squareStyle}>
-				<Cell label={getLabel(x, y)} hasShip={hasShip} placingShip={placingShip} stage={stage} />
+				<Cell label={getLabel(x, y)} hasShip={hasShip} placingShip={placingShip} shipAdjacent={shipAdjacent} stage={stage} />
 			</div>
 		);
 	};
