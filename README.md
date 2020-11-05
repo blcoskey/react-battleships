@@ -1,6 +1,11 @@
 # React Battleships
 
-I wanted to try and recreate the classic game of battleships using react.
+I Recreated the classic game of battleships using react. 
+
+## Setup
+1. Clone repo
+2. run npm install from repo root
+3. run npm start
 
 
 ![image](./ReadMeImages/image.PNG)
