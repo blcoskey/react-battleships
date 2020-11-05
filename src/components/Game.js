@@ -200,45 +200,45 @@ const Game = props => {
 				</div>
 				<div style={{ width: '135px', height: '135px' }}>
 					<div className='Button-Container'>
-						<div style={buttonStyle} onClick={placeShip}>
+						<div style={buttonStyle} onClick={placeShip} className='no-selecto-bro'>
 							<Cell pointer disabled={!selectedShip}>
 								Place
 							</Cell>
 						</div>
-						<div style={buttonStyle} onClick={() => moveShip(-1, 0)}>
+						<div style={buttonStyle} onClick={() => moveShip(-1, 0)} className='no-selecto-bro'>
 							<Cell pointer disabled={!selectedShip}>
 								<UpArrow />
 							</Cell>
 						</div>
-						<div style={buttonStyle} onClick={reset}>
+						<div style={buttonStyle} onClick={reset} className='no-selecto-bro'>
 							<Cell pointer>Reset</Cell>
 						</div>
-						<div style={buttonStyle} onClick={() => moveShip(0, -1)}>
+						<div style={buttonStyle} onClick={() => moveShip(0, -1)} className='no-selecto-bro'>
 							<Cell pointer disabled={!selectedShip}>
 								<LeftArrow />
 							</Cell>
 						</div>
-						<div style={buttonStyle} onClick={rotateShip}>
+						<div style={buttonStyle} onClick={rotateShip} className='no-selecto-bro'>
 							<Cell pointer disabled={!selectedShip}>
 								<RotateArrow />
 							</Cell>
 						</div>
-						<div style={buttonStyle} onClick={() => moveShip(0, 1)}>
+						<div style={buttonStyle} onClick={() => moveShip(0, 1)} className='no-selecto-bro'>
 							<Cell pointer disabled={!selectedShip}>
 								<RightArrow />
 							</Cell>
 						</div>
-						<div style={buttonStyle} onClick={randomiseFleet}>
+						<div style={buttonStyle} onClick={randomiseFleet} className='no-selecto-bro'>
 							<Cell pointer>
 								<ShuffleIcon />
 							</Cell>
 						</div>
-						<div style={buttonStyle} onClick={() => moveShip(1, 0)}>
+						<div style={buttonStyle} onClick={() => moveShip(1, 0)} className='no-selecto-bro'>
 							<Cell pointer disabled={!selectedShip}>
 								<DownArrow />
 							</Cell>
 						</div>
-						<div style={buttonStyle} onClick={startGame}>
+						<div style={buttonStyle} onClick={startGame} className='no-selecto-bro'>
 							<Cell pointer disabled={!!selectedShip}>
 								Start
 							</Cell>
