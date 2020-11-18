@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/static/css/main.ecf44163.chunk.css",
+    "main.js": "/static/js/main.9cf22108.chunk.js",
+    "main.js.map": "/static/js/main.9cf22108.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.4f9653fe.js",
+    "runtime-main.js.map": "/static/js/runtime-main.4f9653fe.js.map",
+    "static/js/2.67771664.chunk.js": "/static/js/2.67771664.chunk.js",
+    "static/js/2.67771664.chunk.js.map": "/static/js/2.67771664.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/main.ecf44163.chunk.css.map": "/static/css/main.ecf44163.chunk.css.map",
+    "static/js/2.67771664.chunk.js.LICENSE.txt": "/static/js/2.67771664.chunk.js.LICENSE.txt",
+    "static/media/arrow-down.63ebab35.svg": "/static/media/arrow-down.63ebab35.svg",
+    "static/media/arrow-left.04ce9545.svg": "/static/media/arrow-left.04ce9545.svg",
+    "static/media/arrow-right.187ecd58.svg": "/static/media/arrow-right.187ecd58.svg",
+    "static/media/arrow-rotate.2cd1e5a2.svg": "/static/media/arrow-rotate.2cd1e5a2.svg",
+    "static/media/arrow-up.e721be2c.svg": "/static/media/arrow-up.e721be2c.svg",
+    "static/media/shuffle.15061692.svg": "/static/media/shuffle.15061692.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.4f9653fe.js",
+    "static/js/2.67771664.chunk.js",
+    "static/css/main.ecf44163.chunk.css",
+    "static/js/main.9cf22108.chunk.js"
+  ]
+}
