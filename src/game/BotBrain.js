@@ -57,8 +57,6 @@ export const getShipPlacement = (shipSize, shipType, ships) => {
 	let randomCell;
 	let shipArray = [];
 
-	let testArray = [];
-
 	while (!cellIsValid) {
 		randomCell = getRandomBlock(usedCells);
 		if (!randomCell) {
@@ -77,7 +75,6 @@ export const getShipPlacement = (shipSize, shipType, ships) => {
 		}
 
 		shipArray = getShipZone(x, y, shipSize, shipType, direction);
-		testArray.push(shipArray);
 		if (isShipZoneValid(shipArray, usedCells)) {
 			cellIsValid = true;
 		} else {

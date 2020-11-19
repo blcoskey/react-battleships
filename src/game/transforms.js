@@ -34,3 +34,8 @@ export const ZoneType = {
 	SHIP: 0,
 	ADJACENT: 1,
 };
+
+export const ShipStatus = {
+	SUNK: 0,
+	UNKNOWN: 1,
+};
